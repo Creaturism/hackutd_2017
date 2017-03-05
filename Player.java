@@ -5,12 +5,11 @@ import java.net.URL;
 import javax.json.*;
 import java.io.*;
 import java.net.MalformedURLException;
-import java.util.Arrays;
 
 
 
 public class Player{
-	private int[] champ_id = {266,412,23,79,69,136,13,78,14,1,202,9,43,111,240,99,103,2,164,112,34,27,86,127,57,25,28,105,74,238,68,82,37,96,55,117,22,30,12,122,67,110,77,89,126,134,80,92,121,42,268,51,76,85,3,45,432,150,90,104,254,10,39,64,420,60,106,20,4,24,102,429,36,427,131,223,63,113,8,154,421,133,84,163,18,120,15,236,107,19,72,54,157,101,17,75,58,119,35,50,91,40,115,245,61,114,31,33,7,16,26,56,222,83,6,203,21,62,53,98,201,5,29,11,44,32,41,48,38,161,143,267,59,81};
+	//private int[] champ_id = {266,412,23,79,69,136,13,78,14,1,202,9,43,111,240,99,103,2,164,112,34,27,86,127,57,25,28,105,74,238,68,82,37,96,55,117,22,30,12,122,67,110,77,89,126,134,80,92,121,42,268,51,76,85,3,45,432,150,90,104,254,10,39,64,420,60,106,20,4,24,102,429,36,427,131,223,63,113,8,154,421,133,84,163,18,120,15,236,107,19,72,54,157,101,17,75,58,119,35,50,91,40,115,245,61,114,31,33,7,16,26,56,222,83,6,203,21,62,53,98,201,5,29,11,44,32,41,48,38,161,143,267,59,81};
 	private long id;
 	private String tier;
 	private String division;
@@ -20,11 +19,9 @@ public class Player{
 	private boolean isSeries = false;
 	private int wincount = 0;
 	private int losscount = 0;
-	private String mainChamp;
-	private int mainChampID;
+	private playerData pd;
 	
 	public Player(String summoner_name){
-		System.out.println(champ_id.length);
 		try
 		{
 			URL myURL = new URL("https://na.api.pvp.net/api/lol/na/v1.4/summoner/by-name/" + summoner_name + "?api_key=RGAPI-115fc5c0-f84f-4014-8dc1-c6162cbf652f");
@@ -201,13 +198,56 @@ public class Player{
 	
 	void findWinRates()
 	{
-		int champion = 0;
-		playerData pd = new playerData(id);
+		pd = new playerData(id);
+
 	}
 	
-	String getMain()
+	String getMain1()
 	{
-		return mainChamp;
+		return getChampion(pd.getMain1());
+	}
+	
+	String getMain2()
+	{
+		return getChampion(pd.getMain2());
 	}
 		
+	String getMain3()
+	{
+		return getChampion(pd.getMain3());
 	}
+	
+	String getChampion(int id)
+	{
+		try
+		{
+			URL myURL = new URL("https://global.api.pvp.net/api/lol/static-data/na/v1.2/champion/"+id+"?champData=info&api_key=RGAPI-115fc5c0-f84f-4014-8dc1-c6162cbf652f");
+			try 
+			{
+				InputStream is = myURL.openStream();
+				javax.json.stream.JsonParser parser = Json.createParser(is);
+				while (parser.hasNext()) {
+					javax.json.stream.JsonParser.Event e = parser.next();
+					if (e == javax.json.stream.JsonParser.Event.KEY_NAME){
+						switch (parser.getString()) {
+						case "name":
+							parser.next();
+							return parser.getString();
+						
+					}
+				}	
+			}
+			
+		}
+		catch(IOException e)
+		{
+			System.out.println("Invalid API Key");
+		}
+	}
+	catch(MalformedURLException e)
+	{
+		System.out.println("Invalid URL");
+	}
+		return null;				
+	}
+}
