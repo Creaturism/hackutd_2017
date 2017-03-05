@@ -1,5 +1,5 @@
 package hackathon_project;
-//Unfinished
+
 //Import Statements
 import java.net.URL;
 import javax.json.*;
@@ -15,12 +15,12 @@ public class playerData {
 	private int Kills = 3;
 	private int Deaths = 4;
 	private int Assists = 5;
-	private int champ1ID;
-	private int champ2ID;
-	private int champ3ID;
-	private double winrate1;
-	private double winrate2;
-	private double winrate3;
+	private int champ1ID = 0;
+	private int champ2ID = 0;
+	private int champ3ID = 0;
+	private int numPlayed1 = 0;
+	private int numPlayed2 = 0;
+	private int numPlayed3 = 0;
 	
 	
 	public playerData(long summoner_id){
@@ -70,6 +70,7 @@ public class playerData {
 						}
 					}	
 				}
+				findMain();
 			}
 			catch(IOException e)
 			{
@@ -81,37 +82,64 @@ public class playerData {
 			System.out.println("Invalid URL");
 		}
 	}
-	
-	int getPlayed()
-	{
-		return numPlayed;
-	}
-	int getWins()
-	{
-		return numWin;
-	}
-	double getWinrate()
-	{
-		if(numWin == 0 && numPlayed == 0)
-			return 0.0;
-		return 100 * (double) numWin / (double) (numPlayed);
-	}
 
 	int[][] getData()
 	{
 		return playerD;
 	}
-	String getKDA()
-	{
-		return Kills + "/" + Deaths + "/" + Assists;
-	}
-	
+
 	void findMain()
 	{
+		int curId = 0;
+		int id = 1;
+		while(id != 0){
+			curId++;
+			id = playerD[0][curId];
+			if(id != 0){
+				int newPlayed = playerD[numPlayed][curId];
+				if(numPlayed1 <= newPlayed){
+					champ3ID = champ2ID;
+					champ2ID = champ1ID;
+					champ1ID = id;
+					numPlayed3 = numPlayed2;
+					numPlayed2 = numPlayed1;
+					numPlayed1 = newPlayed;
+				}
+				else if(numPlayed2 <= newPlayed)
+				{
+					champ3ID = champ2ID;
+					champ2ID = id;
+					numPlayed3 = numPlayed2;
+					numPlayed2 = newPlayed;
+				}
+				else if(numPlayed3 <= newPlayed)
+				{
+					champ3ID = id;
+					numPlayed3 = newPlayed;
+				}
+				else
+				{
+					
+				}
+			}
+		}
 		
 	}
-	double getKDARatio()
+	int getMain1()
 	{
-		return (double)( Kills+Assists ) / (double) Deaths;
+		return champ1ID;
 	}
+	
+	int getMain2()
+	{
+		return champ2ID;
+	}
+	
+	int getMain3()
+	{
+		return champ3ID;
+	}
+	
+	
+	
 }
